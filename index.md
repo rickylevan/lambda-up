@@ -2,18 +2,33 @@
 layout: default
 title: Home
 ---
-{% include themes/bootstrap-3/page.html %}
 
 "Is this thing on?"
 
 
-{% highlight ruby %}
-def foo
-  puts 'foo'
-end
+{% highlight clojure %}
+
+(defn square [x] (* x x))
+(= 16 (square 4))
+
 {% endhighlight %}
 
-{% highlight python %}
-def yourfunction():
-     print "Hello World!"
-{% endhighlight %}
+Now let us play with some Markdown.
+
+Text attributes *italic* **bold** `monospace`
+
+A [link](http://www.wikipedia.org)
+
+Here is a list:
+
+	* apples
+	* oranges
+	* pears
+
+And numbered:
+
+	1. apples
+	2. oranges
+	3. pears
+
+![Christmas kid](http://i.imgur.com/X4dlJkT.jpg)
