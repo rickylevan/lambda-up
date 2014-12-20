@@ -1,6 +1,8 @@
-name: Christmas Recipes
+name: Lambda-up
+port: 4001
 markdown: redcarpet
 highlighter: pygments
 baseurl: /lambda-up
 sass:
     sass_dir: _sass
+

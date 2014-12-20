@@ -3,9 +3,13 @@ layout: code
 title: Clojure Collision Logic
 ---
 
+Read [Reddit](http://www.reddit.com) for all of your reddit needs.
+
+## My First Section
 Here is an example of the underlying collision logic. 
 
 {% highlight clojure %}
+
 
 ;; collision logic --- now the input balls are the mutable atoms 
 (defn collide! 
@@ -48,6 +52,7 @@ Here is an example of the underlying collision logic.
        (swap! that-ball assoc :vel that-new-vel)
        (swap! this-ball assoc :pos this-new-pos)
        (swap! that-ball assoc :pos that-new-pos))))))
+
 
 {% endhighlight %}
 

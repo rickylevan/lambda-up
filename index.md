@@ -2,6 +2,7 @@
 layout: default
 title: Home
 ---
+{% include themes/bootstrap-3/page.html %}
 
 "Is this thing on?"
 
