@@ -2,3 +2,5 @@ name: Christmas Recipes
 markdown: redcarpet
 highlighter: pygments
 baseurl: /lambda-up
+sass:
+    sass_dir: _sass
