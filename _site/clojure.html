@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Some Clojure</title>
+        <link rel="stylesheet" href="/christmas-recipes/css/syntax.css" >
+    </head>
+    <body>
+
+
+	<main>
+
+    	<h1>Some Clojure</h1>
+
+    	<div class="highlight"><pre><code class="language-clojure" data-lang="clojure"><span class="p">(</span><span class="kd">ns </span><span class="nv">ballworld.core</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">clojure.core.matrix</span> <span class="ss">:as</span> <span class="nv">m</span><span class="p">])</span>
+  <span class="p">(</span><span class="ss">:import</span>  <span class="p">[</span><span class="nv">javax.swing</span> <span class="nv">JButton</span> <span class="nv">JFrame</span> <span class="nv">JPanel</span><span class="p">])</span>
+  <span class="p">(</span><span class="ss">:import</span>  <span class="nv">java.awt.event.ActionListener</span><span class="p">)</span>
+  <span class="p">(</span><span class="ss">:import</span>  <span class="nv">java.awt.Color</span><span class="p">))</span>
+
+<span class="c1">;; http://stackoverflow.com/questions/3636364/can-i-clean-the-repl</span>
+<span class="c1">;; trying to purge existing state for a fresh run with a new -main call</span>
+<span class="c1">;; (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) </span>
+
+<span class="c1">;; structs</span>
+<span class="p">(</span><span class="kd">defrecord </span><span class="nv">Point</span> <span class="p">[</span><span class="nv">x</span> <span class="nv">y</span><span class="p">])</span>
+<span class="p">(</span><span class="kd">defrecord </span><span class="nv">Ball</span> <span class="p">[</span><span class="nv">pos</span> <span class="nv">vel</span> <span class="nv">rad</span> <span class="nv">color</span><span class="p">])</span>
+
+<span class="c1">;; time primitives</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">timeflow-bool</span> <span class="p">(</span><span class="nf">atom</span> <span class="nv">false</span><span class="p">))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">time-flowing?</span> <span class="p">[]</span> <span class="o">@</span><span class="nv">timeflow-bool</span><span class="p">)</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">resume-timeflow!</span> <span class="p">[]</span> <span class="p">(</span><span class="nf">swap!</span> <span class="nv">timeflow-bool</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">_</span><span class="p">]</span> <span class="nv">true</span><span class="p">)))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">stop-timeflow!</span> <span class="p">[]</span> <span class="p">(</span><span class="nf">swap!</span> <span class="nv">timeflow-bool</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">_</span><span class="p">]</span> <span class="nv">false</span><span class="p">)))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">start-timeflow!</span> <span class="p">[]</span> <span class="p">(</span><span class="nf">resume-timeflow!</span><span class="p">))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">switch-timeflow!</span> <span class="p">[]</span> <span class="p">(</span><span class="nf">swap!</span> <span class="nv">timeflow-bool</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">b</span><span class="p">]</span> <span class="p">(</span><span class="nb">not </span><span class="nv">b</span><span class="p">))))</span>
+
+<span class="c1">;; helpers for color shifting</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">time-period</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">time-counter</span> <span class="p">(</span><span class="nf">atom</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">flip-sign</span> <span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">* </span><span class="mi">-1</span> <span class="nv">x</span><span class="p">))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">add-points</span> <span class="p">[</span><span class="nv">p1</span> <span class="nv">p2</span><span class="p">]</span> 
+  <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="nv">p1</span><span class="p">)</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">p2</span><span class="p">))</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="nv">p1</span><span class="p">)</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">p2</span><span class="p">))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">default-radius</span> <span class="mi">30</span><span class="p">)</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">rand-color</span> <span class="p">[]</span> 
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">rand-val</span> <span class="p">(</span><span class="k">fn </span><span class="p">[]</span> <span class="p">(</span><span class="nb">int </span><span class="p">(</span><span class="nb">* </span><span class="mi">256</span> <span class="p">(</span><span class="nf">Math/random</span><span class="p">))))]</span>
+    <span class="p">(</span><span class="nf">Color.</span> <span class="p">(</span><span class="nf">rand-val</span><span class="p">)</span> <span class="p">(</span><span class="nf">rand-val</span><span class="p">)</span> <span class="p">(</span><span class="nf">rand-val</span><span class="p">))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">rand-vel</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="nb">- </span><span class="mi">12</span> <span class="p">(</span><span class="nb">* </span><span class="mi">24</span> <span class="p">(</span><span class="nf">Math/random</span><span class="p">))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">rand-radius</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="nb">+ </span><span class="mi">15</span> <span class="p">(</span><span class="nb">* </span><span class="mi">25</span> <span class="p">(</span><span class="nf">Math/random</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">ball1</span> <span class="p">(</span><span class="nf">atom</span> <span class="p">(</span><span class="nf">Ball.</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mi">80</span> <span class="mi">80</span><span class="p">)</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mf">8.0</span> <span class="mf">3.7</span><span class="p">)</span> <span class="nv">default-radius</span> <span class="nv">Color/red</span><span class="p">)))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">ball2</span> <span class="p">(</span><span class="nf">atom</span> <span class="p">(</span><span class="nf">Ball.</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mi">120</span> <span class="mi">70</span><span class="p">)</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mf">7.0</span> <span class="mf">4.7</span><span class="p">)</span> <span class="nv">default-radius</span> <span class="nv">Color/blue</span><span class="p">)))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">ball3</span> <span class="p">(</span><span class="nf">atom</span> <span class="p">(</span><span class="nf">Ball.</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mi">90</span> <span class="mi">60</span><span class="p">)</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mf">10.0</span> <span class="mf">7.5</span><span class="p">)</span> <span class="nv">default-radius</span> <span class="nv">Color/green</span><span class="p">)))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">balls</span> <span class="p">(</span><span class="nf">atom</span> <span class="o">#</span><span class="p">{</span><span class="nv">ball1</span> <span class="nv">ball2</span> <span class="nv">ball3</span><span class="p">}))</span>
+
+<span class="c1">;; store special behaviors for the balls to execute</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">special-behaviors</span> <span class="p">(</span><span class="nf">atom</span> <span class="o">#</span><span class="p">{}))</span>
+
+<span class="c1">;; toggle whether the balls obey some special behavior </span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">swap-in-special</span> <span class="p">[</span><span class="nv">f!</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">contains? </span><span class="o">@</span><span class="nv">special-behaviors</span> <span class="nv">f!</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">swap!</span> <span class="nv">special-behaviors</span> <span class="nb">disj </span><span class="nv">f!</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">swap!</span> <span class="nv">special-behaviors</span> <span class="nb">conj </span><span class="nv">f!</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">add-ball!</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">balls</span> <span class="nv">conj</span>
+         <span class="p">(</span><span class="nf">atom</span> <span class="p">(</span><span class="nf">Ball.</span> <span class="p">(</span><span class="nf">Point.</span> <span class="mi">80</span> <span class="mi">80</span><span class="p">)</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nf">rand-vel</span><span class="p">)</span> <span class="p">(</span><span class="nf">rand-vel</span><span class="p">))</span> 
+                  <span class="p">(</span><span class="nf">rand-radius</span><span class="p">)</span> <span class="p">(</span><span class="nf">rand-color</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">clear-balls!</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">balls</span> <span class="nv">empty</span><span class="p">))</span>
+
+<span class="c1">;; defining collision primitives -- these helper functions are all pure.</span>
+<span class="c1">;; &#39;this-ball&#39; and &#39;that-ball&#39; here are the underlying immutable values.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-delta-vel</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+    <span class="p">[(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">this-ball</span><span class="p">)))</span>
+     <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">this-ball</span><span class="p">)))])</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-delta-pos</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+    <span class="p">[(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))</span>
+     <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))])</span>
+
+<span class="c1">;; real collision time. Negative, relative to detection time t = 0 </span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-collision-time</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dvel</span> <span class="p">(</span><span class="nf">get-delta-vel</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">)</span>
+        <span class="nv">dpos</span> <span class="p">(</span><span class="nf">get-delta-pos</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">)</span>
+        <span class="nv">R</span>      <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:rad</span> <span class="nv">this-ball</span><span class="p">)</span> <span class="p">(</span><span class="ss">:rad</span> <span class="nv">that-ball</span><span class="p">))]</span>
+    <span class="c1">;; magic from the math</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">physics-factor</span>
+          <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">Math/pow</span> <span class="p">(</span><span class="nf">m/dot</span> <span class="nv">dvel</span> <span class="nv">dpos</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
+             <span class="p">(</span><span class="nb">* </span><span class="p">(</span><span class="nf">m/dot</span> <span class="nv">dvel</span> <span class="nv">dvel</span><span class="p">)</span>
+                <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">m/dot</span> <span class="nv">dpos</span> <span class="nv">dpos</span><span class="p">)</span> <span class="p">(</span><span class="nf">Math/pow</span> <span class="nv">R</span> <span class="mi">2</span><span class="p">))))]</span>
+      <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nf">m/dot</span> <span class="nv">dvel</span> <span class="nv">dpos</span><span class="p">))</span>
+            <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nf">Math/sqrt</span> <span class="nv">physics-factor</span><span class="p">)))</span>
+         <span class="p">(</span><span class="nf">m/dot</span> <span class="nv">dvel</span> <span class="nv">dvel</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-mass</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span> <span class="p">(</span><span class="nf">Math/pow</span> <span class="p">(</span><span class="ss">:rad</span> <span class="nv">ball</span><span class="p">)</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-distance</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">this-pos</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)</span> <span class="nv">that-pos</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nf">m/distance</span> <span class="p">[(</span><span class="ss">:x</span> <span class="nv">this-pos</span><span class="p">)</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">this-pos</span><span class="p">)]</span>
+                <span class="p">[(</span><span class="ss">:x</span> <span class="nv">that-pos</span><span class="p">)</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">that-pos</span><span class="p">)])))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">overlapping?</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="nf">get-distance</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">)</span>
+     <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:rad</span> <span class="nv">this-ball</span><span class="p">)</span> <span class="p">(</span><span class="ss">:rad</span> <span class="nv">that-ball</span><span class="p">))))</span>  
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-reduced-mass</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">this-mass</span> <span class="p">(</span><span class="nf">Math/pow</span> <span class="p">(</span><span class="ss">:rad</span> <span class="nv">this-ball</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="nv">that-mass</span> <span class="p">(</span><span class="nf">Math/pow</span> <span class="p">(</span><span class="ss">:rad</span> <span class="nv">that-ball</span><span class="p">)</span> <span class="mi">2</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="nb">* </span><span class="nv">this-mass</span> <span class="nv">that-mass</span><span class="p">)</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">this-mass</span> <span class="nv">that-mass</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-impulse</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">nx</span> <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))</span>
+              <span class="p">(</span><span class="nf">get-distance</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">))</span>
+        <span class="nv">ny</span> <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))</span>
+              <span class="p">(</span><span class="nf">get-distance</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">))]</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dvn</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">* </span><span class="nv">nx</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">this-ball</span><span class="p">))))</span>
+                 <span class="p">(</span><span class="nb">* </span><span class="nv">ny</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="nv">this-ball</span><span class="p">)))))</span>
+          <span class="nv">rm</span> <span class="p">(</span><span class="nf">get-reduced-mass</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">)]</span>
+      <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">rm</span> <span class="nv">dvn</span> <span class="nv">nx</span><span class="p">)</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">rm</span> <span class="nv">dvn</span> <span class="nv">ny</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">nudge</span> <span class="mf">1.1</span><span class="p">)</span>
+
+<span class="c1">;; collision logic --- now the input balls are the mutable atoms </span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">collide!</span> 
+  <span class="p">([</span><span class="nv">ball</span><span class="p">]</span>
+   <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">this-ball</span> <span class="nv">ball</span><span class="p">]</span>
+     <span class="p">(</span><span class="nb">doseq </span><span class="p">[</span><span class="nv">that-ball</span> <span class="p">(</span><span class="nb">disj </span><span class="o">@</span><span class="nv">balls</span> <span class="nv">this-ball</span><span class="p">)]</span>
+       <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">overlapping?</span> <span class="o">@</span><span class="nv">this-ball</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">)</span>
+         <span class="p">(</span><span class="nf">collide!</span> <span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">)))))</span>
+  <span class="p">([</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+   <span class="c1">;; compute new velocities from impulse physics</span>
+   <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">this-new-vel</span> 
+         <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="nf">get-impulse</span> <span class="o">@</span><span class="nv">this-ball</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="nf">get-mass</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">)))</span>
+                 <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="nf">get-impulse</span> <span class="o">@</span><span class="nv">this-ball</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="nf">get-mass</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))))</span>
+         <span class="nv">that-new-vel</span>
+         <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="nf">get-impulse</span> <span class="o">@</span><span class="nv">that-ball</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span> <span class="p">(</span><span class="nf">get-mass</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">)))</span>
+                 <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nb">/ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="nf">get-impulse</span> <span class="o">@</span><span class="nv">that-ball</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span> <span class="p">(</span><span class="nf">get-mass</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))))</span>
+         <span class="nv">tstar</span> <span class="p">(</span><span class="nf">get-collision-time</span> <span class="o">@</span><span class="nv">this-ball</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">)]</span>
+     <span class="c1">;; rewind time at old velocity to negative time tstar, and redo time at new velocity</span>
+     <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">this-new-pos</span>
+           <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span> 
+                      <span class="p">(</span><span class="nb">* </span><span class="nv">tstar</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">)))</span>
+                      <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nb">* </span><span class="nv">nudge</span> <span class="nv">tstar</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">this-new-vel</span><span class="p">))))</span>
+                   <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">))</span> 
+                      <span class="p">(</span><span class="nb">* </span><span class="nv">tstar</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">this-ball</span><span class="p">)))</span>
+                      <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nb">* </span><span class="nv">nudge</span> <span class="nv">tstar</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">this-new-vel</span><span class="p">)))))</span>
+           <span class="nv">that-new-pos</span>
+           <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span> 
+                      <span class="p">(</span><span class="nb">* </span><span class="nv">tstar</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">)))</span>
+                      <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nb">* </span><span class="nv">nudge</span> <span class="nv">tstar</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">that-new-vel</span><span class="p">))))</span>
+                   <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">))</span> 
+                      <span class="p">(</span><span class="nb">* </span><span class="nv">tstar</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">that-ball</span><span class="p">)))</span>
+                      <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="nb">* </span><span class="nv">nudge</span> <span class="nv">tstar</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">that-new-vel</span><span class="p">)))))]</span>
+
+     <span class="p">(</span><span class="nb">doseq </span><span class="p">[]</span>
+       <span class="p">(</span><span class="nf">swap!</span> <span class="nv">this-ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="nv">this-new-vel</span><span class="p">)</span>
+       <span class="p">(</span><span class="nf">swap!</span> <span class="nv">that-ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="nv">that-new-vel</span><span class="p">)</span>
+       <span class="p">(</span><span class="nf">swap!</span> <span class="nv">this-ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="nv">this-new-pos</span><span class="p">)</span>
+       <span class="p">(</span><span class="nf">swap!</span> <span class="nv">that-ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="nv">that-new-pos</span><span class="p">))))))</span>
+
+
+<span class="c1">;; Move as instructed by Newton&#39;s first</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">move-straight!</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span> <span class="p">(</span><span class="nf">swap!</span> <span class="nv">b</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="p">(</span><span class="nf">add-points</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">b</span><span class="p">)</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">b</span><span class="p">))))</span>
+
+<span class="c1">;; Move in a curved path</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">curve!</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">theta</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">Math/PI</span> <span class="mi">16</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nf">swap!</span> <span class="nv">b</span> <span class="nb">assoc </span><span class="ss">:vel</span>
+      <span class="p">(</span><span class="nf">Point.</span> 
+        <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nb">* </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">b</span><span class="p">))</span> <span class="p">(</span><span class="nf">Math/cos</span> <span class="nv">theta</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">b</span><span class="p">))</span> <span class="p">(</span><span class="nf">Math/sin</span> <span class="nv">theta</span><span class="p">)))</span>
+        <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">* </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">b</span><span class="p">))</span> <span class="p">(</span><span class="nf">Math/cos</span> <span class="nv">theta</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">b</span><span class="p">))</span> <span class="p">(</span><span class="nf">Math/sin</span> <span class="nv">theta</span><span class="p">)))))))</span>
+
+<span class="c1">;; Change color of ball, at some period n * thread sleep time</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">color-shift!</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">= </span><span class="mi">0</span> <span class="o">@</span><span class="nv">time-counter</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">swap!</span> <span class="nv">b</span> <span class="nb">assoc </span><span class="ss">:color</span> <span class="p">(</span><span class="nf">rand-color</span><span class="p">))))</span>
+
+<span class="c1">;; buttons</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">add-ball-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Add&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">add-ball!</span><span class="p">))))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">clear-balls-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Clear&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">clear-balls!</span><span class="p">))))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">pause-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Pause&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">switch-timeflow!</span><span class="p">))))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">curve-balls-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Curve&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">swap-in-special</span> <span class="nv">curve!</span><span class="p">))))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">color-shift-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Colorshift&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">swap-in-special</span> <span class="nv">color-shift!</span><span class="p">))))))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">collide-balls-button</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JButton.</span> <span class="s">&quot;Collide&quot;</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.addActionListener</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">ActionListener</span><span class="p">]</span> <span class="p">[]</span>
+      <span class="p">(</span><span class="nf">actionPerformed</span> <span class="p">[</span><span class="nv">e</span><span class="p">]</span> <span class="p">(</span><span class="nf">swap-in-special</span> <span class="nv">collide!</span><span class="p">))))))</span>
+
+
+<span class="c1">;; plug to stop odd bug of a ball wiggling against the frame&#39;s edge</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">bump</span> <span class="mi">5</span><span class="p">)</span> 
+
+<span class="c1">;; so it&#39;s defined for the .getBounds methods below -- of course changes later</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">main-panel</span><span class="p">)</span>
+
+<span class="c1">;; Bounce transitions. There should be a way to generalize these very similar code blocks</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">no-bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">])</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">right-bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nf">do</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">old-vel</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">old-vel</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">old-vel</span><span class="p">))))</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dx</span> <span class="p">(</span><span class="nf">Math/abs</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">.width</span> <span class="p">(</span><span class="nf">.getBounds</span> <span class="nv">main-panel</span><span class="p">)))))]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">dx</span><span class="p">)</span> <span class="nv">bump</span><span class="p">)</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">bottom-bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nf">do</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">old-vel</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">old-vel</span><span class="p">)</span> <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">old-vel</span><span class="p">)))))</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dy</span> <span class="p">(</span><span class="nf">Math/abs</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">.height</span> <span class="p">(</span><span class="nf">.getBounds</span> <span class="nv">main-panel</span><span class="p">)))))]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="p">(</span><span class="nf">Point.</span>  <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">dy</span><span class="p">)</span> <span class="nv">bump</span><span class="p">))))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">left-bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nf">do</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">old-vel</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">old-vel</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">old-vel</span><span class="p">))))</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dx</span> <span class="p">(</span><span class="nf">Math/abs</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">dx</span><span class="p">)</span> <span class="nv">bump</span><span class="p">)</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">top-bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nf">do</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">old-vel</span> <span class="p">(</span><span class="ss">:vel</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:vel</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">old-vel</span><span class="p">)</span> <span class="p">(</span><span class="nf">flip-sign</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">old-vel</span><span class="p">)))))</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dy</span> <span class="p">(</span><span class="nf">Math/abs</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))]</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">ball</span> <span class="nb">assoc </span><span class="ss">:pos</span> <span class="p">(</span><span class="nf">Point.</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">dy</span><span class="p">))</span> <span class="nv">bump</span><span class="p">))))))</span>
+
+<span class="c1">;; Find if part (or all) of the ball is outside of the panel. Return the function</span>
+<span class="c1">;; corresponding to the side (possibly none) that it has fallen off</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-bounce-fun</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">shrunk-bounds</span>
+        <span class="p">{</span><span class="ss">:x</span>      <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)</span>
+         <span class="ss">:y</span>      <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)</span>
+         <span class="ss">:width</span>  <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">.width</span> <span class="p">(</span><span class="nf">.getBounds</span> <span class="nv">main-panel</span><span class="p">))</span>  <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))</span>
+         <span class="ss">:height</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">.height</span> <span class="p">(</span><span class="nf">.getBounds</span> <span class="nv">main-panel</span><span class="p">))</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">)))}]</span>
+    <span class="p">(</span><span class="nb">cond </span>
+      <span class="p">(</span><span class="nb">&gt; </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:x</span> <span class="nv">shrunk-bounds</span><span class="p">)</span> <span class="p">(</span><span class="ss">:width</span> <span class="nv">shrunk-bounds</span><span class="p">)))</span>     <span class="nv">right-bounce!</span>
+      <span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="nv">shrunk-bounds</span><span class="p">))</span>                                <span class="nv">left-bounce!</span>
+      <span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="nv">shrunk-bounds</span><span class="p">))</span>                                <span class="nv">top-bounce!</span>
+      <span class="p">(</span><span class="nb">&gt; </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="ss">:y</span> <span class="nv">shrunk-bounds</span><span class="p">)</span> <span class="p">(</span><span class="ss">:height</span> <span class="nv">shrunk-bounds</span><span class="p">)))</span>    <span class="nv">bottom-bounce!</span>
+      <span class="ss">:else</span>                                                                   <span class="nv">no-bounce!</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">bounce!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">((</span><span class="nf">get-bounce-fun</span> <span class="nv">ball</span><span class="p">)</span> <span class="nv">ball</span><span class="p">))</span>
+
+<span class="c1">;; core ball behavior through time</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">update!</span> <span class="p">[</span><span class="nv">ball</span><span class="p">]</span>
+  <span class="p">(</span><span class="nb">dosync </span>
+    <span class="p">(</span><span class="nf">move-straight!</span> <span class="nv">ball</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">doseq </span><span class="p">[</span><span class="nv">special-behavior!</span> <span class="o">@</span><span class="nv">special-behaviors</span><span class="p">]</span>
+      <span class="p">(</span><span class="nf">special-behavior!</span> <span class="nv">ball</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">bounce!</span> <span class="nv">ball</span><span class="p">)))</span>
+
+<span class="c1">;; painting and panels</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">paint-ball</span> <span class="p">[</span><span class="nv">ball</span> <span class="nv">g</span><span class="p">]</span> 
+  <span class="p">(</span><span class="nf">.fillOval</span> <span class="nv">g</span> <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> 
+               <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span>
+               <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span> 
+               <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="p">(</span><span class="ss">:rad</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">main-panel</span> <span class="p">(</span><span class="nb">proxy </span><span class="p">[</span><span class="nv">JPanel</span><span class="p">]</span> <span class="p">[]</span>
+         <span class="p">(</span><span class="nf">paintComponent</span> <span class="p">[</span><span class="nv">g</span><span class="p">]</span>
+           <span class="p">(</span><span class="nf">proxy-super</span> <span class="nv">paintComponent</span> <span class="nv">g</span><span class="p">)</span>
+           <span class="p">(</span><span class="nb">doseq </span><span class="p">[</span><span class="nv">ball</span> <span class="o">@</span><span class="nv">balls</span><span class="p">]</span>
+             <span class="p">(</span><span class="nf">.setColor</span> <span class="nv">g</span> <span class="p">(</span><span class="ss">:color</span> <span class="o">@</span><span class="nv">ball</span><span class="p">))</span>
+             <span class="p">(</span><span class="nf">paint-ball</span> <span class="nv">ball</span> <span class="nv">g</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">control-panel</span>
+  <span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">JPanel.</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.setBackground</span> <span class="nv">Color/lightGray</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">add-ball-button</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">clear-balls-button</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">curve-balls-button</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">color-shift-button</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">collide-balls-button</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">.add</span> <span class="nv">pause-button</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">main-frame</span> <span class="p">(</span><span class="nf">JFrame.</span> <span class="s">&quot;Ballworld&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">doto </span><span class="nv">main-frame</span>
+  <span class="p">(</span><span class="nf">.add</span> <span class="nv">control-panel</span> <span class="nv">java.awt.BorderLayout/NORTH</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">.add</span> <span class="nv">main-panel</span> <span class="nv">java.awt.BorderLayout/CENTER</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">.setSize</span> <span class="mi">600</span> <span class="mi">600</span><span class="p">))</span>
+
+<span class="c1">;; main loops</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">refresh</span> <span class="p">[]</span> <span class="p">(</span><span class="nf">javax.swing.SwingUtilities/invokeLater</span> <span class="o">#</span><span class="p">(</span><span class="nf">.repaint</span> <span class="nv">main-panel</span><span class="p">)))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">start-gui-refresh-loop</span> <span class="p">[]</span> <span class="p">(</span><span class="k">loop </span><span class="p">[]</span> <span class="p">(</span><span class="nf">refresh</span><span class="p">)</span> <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="mi">30</span><span class="p">)</span> <span class="p">(</span><span class="nf">recur</span><span class="p">)))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">start-action-loop</span> <span class="p">[]</span> 
+  <span class="p">(</span><span class="k">loop </span><span class="p">[]</span> <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">time-flowing?</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">do</span>
+      <span class="p">(</span><span class="nb">doseq </span><span class="p">[</span><span class="nv">ball</span> <span class="o">@</span><span class="nv">balls</span><span class="p">]</span> <span class="p">(</span><span class="nf">update!</span> <span class="nv">ball</span><span class="p">))</span>
+      <span class="c1">;; count time steps modulo time-period (used to slow color flashing)</span>
+      <span class="p">(</span><span class="nf">swap!</span> <span class="nv">time-counter</span> <span class="o">#</span><span class="p">(</span><span class="nf">mod</span> <span class="p">(</span><span class="nb">inc </span><span class="nv">%</span><span class="p">)</span> <span class="nv">time-period</span><span class="p">))))</span>
+    <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">recur</span><span class="p">)))</span>
+
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="nf">.show</span> <span class="nv">main-frame</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">start-timeflow!</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">future</span> <span class="p">(</span><span class="nf">start-gui-refresh-loop</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">future</span> <span class="p">(</span><span class="nf">start-action-loop</span><span class="p">)))</span>
+<span class="o">```</span><span class="nv">clojure</span>
+</code></pre></div>
+	</main>
+
+
+</body>
+</html>
+
