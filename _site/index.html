@@ -48,9 +48,9 @@
 </code></pre></div>
 <p>And here is another example of Clojure code:
 Don&#39;t things just seem <em>cleaner</em>? And text. And text. And here is some more text I&#39;m writing
-just for the sake of tseeing how things wrap. Will they wrap? Will we ever know? What a mystery!</p>
+just for the sake of seeing how things wrap. Will they wrap? Will we ever know? What a mystery!</p>
 <div class="highlight"><pre><code class="language-clojure" data-lang="clojure"><span class="p">(</span><span class="kd">defn </span><span class="nv">collatz</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
-    <span class="p">(</span><span class="k">loop </span><span class="p">[</span><span class="nv">n</span> <span class="nv">n</span> <span class="nv">out</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">(</span><span class="k">loop </span><span class="p">[</span><span class="nv">n</span> <span class="nv">n</span> <span class="nv">out</span> <span class="p">[]]</span>
         <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">= </span><span class="nv">n</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="nb">conj </span><span class="nv">out</span> <span class="mi">1</span><span class="p">)</span>
             <span class="p">(</span><span class="nf">recur</span> <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">odd?</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">inc </span><span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">n</span> <span class="mi">2</span><span class="p">))</span> <span class="p">(</span><span class="nb">conj </span><span class="nv">out</span> <span class="nv">n</span><span class="p">)))))</span>
 <span class="p">(</span><span class="kd">defn </span><span class="nv">get-delta-pos</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>

@@ -32,13 +32,13 @@ public int factorial(int n) {
 
 And here is another example of Clojure code:
 Don't things just seem *cleaner*? And text. And text. And here is some more text I'm writing
-just for the sake of tseeing how things wrap. Will they wrap? Will we ever know? What a mystery!
+just for the sake of seeing how things wrap. Will they wrap? Will we ever know? What a mystery!
 
 
 
 ```clojure
 (defn collatz [n]
-	(loop [n n out 1]
+	(loop [n n out []]
 		(if (= n 1) (conj out 1)
 			(recur (if (odd? n) (inc (* 3 n)) (/ n 2)) (conj out n)))))
 (defn get-delta-pos [this-ball that-ball]
