@@ -1,14 +1,17 @@
 ---
 layout: default
-title: Demos
+title: A simple Clojure sim, BallWorld
 ---
 
 Here is some simple Clojure:
+
 
 ```clojure
 (defn square [x] (* x x))
 (= 16 (square 4))
 ```
+<!-- {% highlight clojure linenos %} -->
+<!-- {% endhighlight %} -->
 
 
 A little bit of Java: 

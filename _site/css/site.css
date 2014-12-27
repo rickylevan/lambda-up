@@ -75,6 +75,15 @@ a:link {
 	padding-bottom: 30px;
 }
 
+.highlight {
+	display: block;
+	border: 1px solid #cecece;
+	border-radius: 3px;
+	padding: 6px 6px 6px 6px;
+	overflow-x: scroll;
+	background-color: #ffffff
+}
+
 
 /* fonts */
 body {
