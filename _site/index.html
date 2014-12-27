@@ -1,50 +1,99 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Home</title>
-        <link rel="stylesheet" href="/christmas-recipes/css/syntax.css" >
-    </head>
-    <body>
+	<head>
+  	<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Demos</title>
+		<link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/lambda-up/css/github-syntax.css">
+		<link rel="stylesheet" href="/lambda-up/css/swan-style.css">
+		<link rel="stylesheet" href="/lambda-up/css/site.css">
+		
+	</head>
+	<body>
 
-    <h1>Home</h1>
+					<header class="site-header">
+				<div class="wrapper">
+					<a class="site-title" href="/lambda-up/"> Lambda-up </a>
+					<img src="/lambda-up/assets/clojure-icon.png" alt="Clojure logo" style="width: 50px;"/>
+				</div>
+		</header>
+		
+		<div class="wrapper">
+			<div id="main_post">
+			<div class="title">
+				<h1>Demos</h1>
+			</div>
+			<p>Here is some simple Clojure:</p>
+<div class="highlight"><pre><code class="language-clojure" data-lang="clojure"><span class="p">(</span><span class="kd">defn </span><span class="nv">square</span> <span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">* </span><span class="nv">x</span> <span class="nv">x</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">16</span> <span class="p">(</span><span class="nf">square</span> <span class="mi">4</span><span class="p">))</span>
+</code></pre></div>
+<p>A little bit of Java: </p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello from Java!&quot;</span><span class="o">);</span>
+<span class="o">}</span>
 
-    <p>&quot;Is this thing on?&quot;</p>
+<span class="kd">public</span> <span class="kt">int</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="o">*</span><span class="n">factorial</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>And here is another example of Clojure code:
+Don&#39;t things just seem <em>cleaner</em>? And text. And text. And here is some more text I&#39;m writing
+just for the sake of tseeing how things wrap. Will they wrap? Will we ever know? What a mystery!</p>
+<div class="highlight"><pre><code class="language-clojure" data-lang="clojure"><span class="p">(</span><span class="kd">defn </span><span class="nv">collatz</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
+    <span class="p">(</span><span class="k">loop </span><span class="p">[</span><span class="nv">n</span> <span class="nv">n</span> <span class="nv">out</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">= </span><span class="nv">n</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="nb">conj </span><span class="nv">out</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">(</span><span class="nf">recur</span> <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">odd?</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">inc </span><span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">n</span> <span class="mi">2</span><span class="p">))</span> <span class="p">(</span><span class="nb">conj </span><span class="nv">out</span> <span class="nv">n</span><span class="p">)))))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">get-delta-pos</span> <span class="p">[</span><span class="nv">this-ball</span> <span class="nv">that-ball</span><span class="p">]</span>
+    <span class="p">[(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:x</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))</span>
+     <span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">that-ball</span><span class="p">))</span> <span class="p">(</span><span class="ss">:y</span> <span class="p">(</span><span class="ss">:pos</span> <span class="nv">this-ball</span><span class="p">)))])</span>
+</code></pre></div>
+<!-- And numbered:
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">foo</span>
-  <span class="nb">puts</span> <span class="s1">&#39;foo&#39;</span>
-<span class="k">end</span></code></pre></div>
+    1. apples
+    2. oranges
+    3. pears -->
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">yourfunction</span><span class="p">():</span>
-     <span class="k">print</span> <span class="s">&quot;Hello World!&quot;</span></code></pre></div>
+<!-- ![Christmas kid](http://i.imgur.com/X4dlJkT.jpg) -->
 
+					</div>
 		<nav class="nav-primary" role="navigation" >
     <ul>
         
         <li>
-        	<a  href="/christmas-recipes/about/">About</a>
+        	<a  href="/lambda-up/about/">About</a>
         </li>
         
         <li>
-        	<a  href="/christmas-recipes/clojure.html">Some Clojure</a>
+        	<a  href="/lambda-up/clojure.html">Clojure Collision Logic</a>
         </li>
         
         <li>
-        	<a  href="/christmas-recipes/feed.xml"></a>
+        	<a class="active" href="/lambda-up/index.html">Demos</a>
         </li>
         
         <li>
-        	<a  href="/christmas-recipes/gingerbread.html">Gingerbread</a>
+        	<a  href="/lambda-up/intro.html">Intro to Blog</a>
         </li>
         
         <li>
-        	<a class="active" href="/christmas-recipes/index.html">Home</a>
+        	<a  href="/lambda-up/saga.html">The Simple Clojure Game</a>
         </li>
         
     </ul>
 </nav>
 
-
-</body>
+		</div>
+	</body>
 </html>
 
+<!-- </div>
+</div>
+</div>
+</body>
+</html>
+ -->

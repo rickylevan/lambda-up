@@ -1,10 +1,38 @@
 ---
 layout: default
 ---
-{% include head.html %}
-    <h1>{{ page.title }}</h1>
 
-    {{ content }}
+<!DOCTYPE html>
+<html>
+	<head>
+  	<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ page.title }}</title>
+		<link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{{site.baseurl}}/css/github-syntax.css">
+		<link rel="stylesheet" href="{{site.baseurl}}/css/swan-style.css">
+		<link rel="stylesheet" href="{{site.baseurl}}/css/site.css">
+		
+	</head>
+	<body>
+
+					<header class="site-header">
+				<div class="wrapper">
+					<a class="site-title" href="/lambda-up/"> Lambda-up </a>
+					<img src="{{site.baseurl}}/assets/clojure-icon.png" alt="Clojure logo" style="width: 50px;"/>
+				</div>
+		</header>
+		
+		<div class="wrapper">
+			<div id="main_post">
+			<div class="title">
+				<h1>{{ page.title }}</h1>
+			</div>
+			{{ content }}
+					</div>
 		{% include nav.html %}
+		</div>
+	</body>
+</html>
 
-{% include foot.html %}
+<!-- {% include foot.html %} -->

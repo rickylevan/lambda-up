@@ -1,0 +1,84 @@
+
+/* Building off "Arthur as a Coder", arthurtw.github.io */
+#colorstrip {
+    width: 100%; height: 3px;
+    border-style: solid;
+    border-color: white;
+    background-color: #b20000;
+}
+
+.site-header { 
+	border-top: 5px solid #b20000; 
+	/* blue: border-top: 5px solid #103479; */
+	border-bottom: 1px solid #cecece; 
+	min-height: 56px; 
+	background: #f0f0f0; 
+	position: relative;
+}
+
+.site-title {
+	font-size: 26px; 
+	line-height: 56px; 
+	letter-spacing: -1px;
+	margin-bottom: 0; 
+	float: left; 
+}
+
+/** Wrapper */
+.wrapper { 
+	max-width: -webkit-calc(800px - (30px * 2)); 
+	max-width: calc(800px - (30px * 2));
+	margin-right: auto; 
+	margin-left: auto;
+	padding-right: 30px; 
+	padding-left: 20px;
+}
+/* @media screen and (max-width: 800px) { 
+	.wrapper {
+	max-width: -webkit-calc(800px - (30px));
+	max-width: calc(800px - (30px));
+	padding-right: 15px;
+	padding-left: 15px; 
+	} 
+} */
+
+
+.site-title, .site-title:visited { color: #000000; }
+
+
+/* from swannodette */
+.site {
+    font-size: 110%;
+    /* text-align: justify; */
+    /* width: 586px; */
+	/* modifying to make thinner side margins */
+    /* margin: 2em 5em 1em 2em; */
+	margin-top: 2em;
+	margin-right: 2em;
+	margin-bottom: 1em;
+	margin-left: 9em;
+    line-height: 1.5em;
+}
+
+
+/* general CSS stuff */
+a:visited {
+    text-decoration: none;
+}
+
+a:link {
+	text-decoration: none;
+}
+
+#main_post {
+	padding-top: 20px;
+	padding-bottom: 30px;
+}
+
+
+/* fonts */
+body {
+	font-family: "Latin Modern Roman",Georgia,"Times New Roman",Times,serif;
+	font-size: 110%;
+	text-align: left;
+}

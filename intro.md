@@ -3,7 +3,7 @@ layout: code
 title: Intro to Blog
 ---
 
-## Why Clojure
+### Why Clojure
 
 {% highlight clojure %}
 
