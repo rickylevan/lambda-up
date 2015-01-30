@@ -8,20 +8,39 @@
 }
 
 .site-header { 
-	border-top: 5px solid #b20000; 
-	/* blue: border-top: 5px solid #103479; */
-	border-bottom: 1px solid #cecece; 
+	/* red border-top: 5px solid #b20000; */
+	border-top: 5px solid #103479; 
+	/* border-bottom: 5px solid #103479; */
+	border-bottom: 1.5px solid #DDD;
 	min-height: 56px; 
-	background: #f0f0f0; 
+	background: #FFF; 
 	position: relative;
+	background-color: #CCE;
+	/* color: #FFF; */
+	vertical-align: middle;
 }
 
 .site-title {
-	font-size: 26px; 
+	font-size: 36px; 
 	line-height: 56px; 
 	letter-spacing: -1px;
-	margin-bottom: 0; 
+	margin-bottom: 0px; 
 	float: left; 
+	color: #222;
+	vertical-align: middle; 
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.site-title, .site-title:visited {
+	color: #222;
+}
+
+.menu-item {
+	color: #222;
+}
+
+.menu-item, .menu-item:visited {
+	color: #222;
 }
 
 /** Wrapper */
@@ -32,6 +51,7 @@
 	margin-left: auto;
 	padding-right: 30px; 
 	padding-left: 20px;
+	vertical-align: center;
 }
 /* @media screen and (max-width: 800px) { 
 	.wrapper {
@@ -41,9 +61,6 @@
 	padding-left: 15px; 
 	} 
 } */
-
-
-.site-title, .site-title:visited { color: #000000; }
 
 
 /* from swannodette */
@@ -81,13 +98,39 @@ a:link {
 	border-radius: 3px;
 	padding: 6px 6px 6px 6px;
 	overflow-x: scroll;
-	background-color: #ffffff
+	background-color: #eee;
+}
+
+img {
+	padding-left: 25px;
+	padding-right: 15px;
+	vertical-align: center;
 }
 
 
 /* fonts */
 body {
-	font-family: "Latin Modern Roman",Georgia,"Times New Roman",Times,serif;
-	font-size: 110%;
-	text-align: left;
+	/* font-family: "Latin Modern Roman",Georgia,"Times New Roman",Times,serif; */
+	
+	/*font-family: "Lucida Grande";
+	font-family: "Georgia";
+	font-family: "Latin Modern Roman";
+	
+	font-family: "Baskerville", times, serif;
+
+	font-family: "Merriweather",Georgia,serif; */
+	/* font: 17px "Merriweather",Georgia,serif; */
+	font-family: "prenton",sans-serif;
+
+
+	font-size: 17px;
+	font-weight: 400;
+	line-height: 26px;
+	text-align: justify;
+	color: #333;
+}
+
+
+h1 {
+	color: #222;
 }
