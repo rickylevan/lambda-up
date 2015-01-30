@@ -12,13 +12,21 @@
 	border-top: 5px solid #103479; 
 	/* border-bottom: 5px solid #103479; */
 	border-bottom: 1.5px solid #DDD;
-	min-height: 56px; 
+	min-height: 55px; 
 	background: #FFF; 
 	position: relative;
 	background-color: #CCE;
 	/* color: #FFF; */
 	vertical-align: middle;
 }
+
+.site-footer {
+	border-bottom: 5px solid #103479; 
+	border-top: 1.5px solid #DDD;
+	min-height: 25px;
+	background-color: #CCE;
+}
+
 
 .site-title {
 	font-size: 36px; 
@@ -104,6 +112,7 @@ a:link {
 img {
 	padding-left: 25px;
 	padding-right: 15px;
+	padding-top: 4px;
 	vertical-align: center;
 }
 
@@ -134,3 +143,4 @@ body {
 h1 {
 	color: #222;
 }
+

@@ -22,9 +22,11 @@ layout: default
 					<header class="site-header">
 				<div class="wrapper">
 					<a class="site-title" href="/lambda-up/"> Lambda-up </a>
-					<img src="{{site.baseurl}}/assets/clojure-icon.png" 
-								alt="Clojure logo" style="width: 60px;"/>
-					<div id="menu_items">
+					<a id="clojure_link" href="http://www.clojure.com">
+						<img src="{{site.baseurl}}/assets/clojure-icon.png" 
+					 alt="Clojure logo" style="width: 60px;"/>
+					</a>
+								<div id="menu_items">
 						<a class="menu_item" href="/lambda-up/about"> About </a>
 						<a class="menu_item" href="/lambda-up/archive"> Archive </a>
 					</div>
@@ -39,8 +41,10 @@ layout: default
 			</div>
 			{{ content }}
 					</div>
-		{% include nav.html %}
 		</div>
+
+		<footer class="site-footer">
+		</footer>
 	</body>
 </html>
 
