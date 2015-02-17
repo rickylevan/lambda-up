@@ -210,10 +210,12 @@ because people are familiar with conventions, and now there would be one more li
 The point of discussing these imperfections is to show that there are always some trade-offs to elegance. But that doesn't
 mean that one solution to given problem can't still be decisively better than another. This is indeed the case
 in the Clojure and Java code segments, if we measure them by the metrics of channelling, comprehending, and composing. 
-Regarding channelling, the Clojure code requires less typing, but more importantly, the fact that it returns the 
-product of the numbers \\(1\\) through \\(n\\) is
-immediately obvious. The uniform syntax and lack of boilerplate make the code easier to 
-comprehend. And finally, the Clojure
+Regarding channelling, the Clojure code requires less typing, and for me its uniform syntax and functional purity
+make it easier to write code that is correct on the first try.
+The code is easier to comprehend because of its lack of boilerplate, but
+more importantly, that it returns the product of the numbers \\(1\\) through \\(n\\) is
+immediately obvious. 
+And finally, the Clojure
 factorial function is more composable in the context of concurrency. Since we're not manually mutating memory locations,
 the code is thread-safe and so can be confidently inserted into a concurrent application.
 
