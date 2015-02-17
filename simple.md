@@ -211,7 +211,7 @@ The point of discussing these imperfections is to show that there are always som
 mean that one solution to given problem can't still be decisively better than another. This is indeed the case
 in the Clojure and Java code segments, if we measure them by the metrics of channelling, comprehending, and composing. 
 Regarding channelling, the Clojure code requires less typing, and for me its uniform syntax and functional purity
-make it easier to write code that is correct on the first try.
+make it more straightforward to write code that is correct on the first try.
 The code is easier to comprehend because of its lack of boilerplate, but
 more importantly, that it returns the product of the numbers \\(1\\) through \\(n\\) is
 immediately obvious. 
