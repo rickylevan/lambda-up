@@ -169,7 +169,7 @@ some detail is always necessary. The term "coder", for one who writes software, 
 the coder is one who writes *code*, in the sense of a special language that is harder 
 to understand than the plaintext. We have to do this because the plaintext, in this analogy,
 is a pure abstraction of the mind, and that of course can't actually run. 
-Doing some from of *encryption*&mdash;making things a little more hidden, piling up a little incidental
+Doing some form of *encryption*&mdash;making things a little more hidden, piling up a little incidental
 complexity&mdash;is always necessary to get something
 to actually work on a real machine. The coder is thus always, to some extent, both an encryptor and a creator of details.
 The goal, in light of the constrained optimization problem 
