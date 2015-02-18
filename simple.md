@@ -223,14 +223,5 @@ If you also like the idea of settling for nothing but the best in terms of quick
 abstractions into the world (aka "managing complexity" and "making it work yesterday"), then I hope that you enjoyed this post!
 This intro naturally has plenty of loose ends, and there is much more to talk about. 
 
-<!-- is a great help to have a name simply refer 
-to an eternal and unchanging value (at least in its given scope). If we don't have this, 
-then identifiers aren't truly names. Instead, they are a useful but still weak abstraction.
-They are aliases for memory locations awaiting mutation. This makes it more difficult
-to understand what an identifier means, because of the time-dependence. -->
-
-
-
-
 
 
