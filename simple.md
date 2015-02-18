@@ -65,7 +65,7 @@ programs, that behaves correctly at the boundaries.
 
 In the context of constrained optimization, the obvious constraint is that
 the system must behave correctly at the boundaries. What remains now is to find our metric
-for determining what is optimal&mdash;why one solution better than another.
+for determining what is optimal&mdash;why one solution is better than another.
 On this subject, the right answer depends on one's interests. For example, 
 performance-critical applications like high-frequency trading and game servers demand
 that there is as little lag as possible between the input stimulus and the output response. 
@@ -96,7 +96,7 @@ how can we construct a system adhering to the boundary constraints as quickly as
 possible? 
 
 The *comprehending* metric asks how quickly one coder can understand code written by 
-another coder (or when we need to read our own code six months later). Is
+another coder (or how quickly we can read our own code six months later). Is
 the code a reasonably natural representation of the core abstraction, which is the
 reason we sat down to code in the first place? Or is the code in a sense excessively *encrypted*, 
 filled with incidental complexity and overly concerned with quirks of the underlying
