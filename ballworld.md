@@ -15,6 +15,10 @@ to first go through some background so we have something in common to talk about
 !! Honor Code Warning: If you are a Rice CS major who has not yet done BallWorld:
 On your honor, do not read this post. Check it out after you finish. 
 
+!! Before you write much more, you should reflect on Clojure notes you've already
+written, and you should re-examine the BallWorld source in both Clojure and Java.
+Doing this, and outlining what you want to say, will make your narrative better.
+
 In the previous post, we conceived of programming as finding a solution to a 
 constrained optimization problem. Our optimizing metrics were the rates of
 channelling, comprehending and composing. The goal was to transform
