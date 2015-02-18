@@ -7,7 +7,15 @@ title: BallWorld, a Field Report
 
 !! Explain at the top the purpose of this field report, how I'm going to introduce
 BallWorld and make some surface-level comparisons with a less philosophizing 
-than the previous post. I'll save that for post #3. 
+than the previous post. I'll save that for post #3. (This post won't be as
+philsophical&mdash;don't worry, I'll get back to that&mdash;but I felt like the
+most important thing to do after an intro post was to go straight to demonstrate
+that Clojure is a kickass tool that gives a more optimal solution for a
+stateful simulation problem. A key thing to do is demonstrate, up front, 
+that a commonly supposed weakness of Clojure *just isn't real at all*.)
+(Then maybe peoples' ears will perk up more when I describe nice features that 
+Clojure has, and that *yes*, these features can totally do real work on 
+large, stateful systems.)
 
 !! To explain what makes Clojure work for a larger, stateful simulation, I need
 to first go through some background so we have something in common to talk about. 
