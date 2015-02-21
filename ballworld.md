@@ -108,4 +108,10 @@ also evolves over time, and so it is clear that we're not dealing with a pure
 black box. Somehow we need to manage state over time. 
 
 
+<h2> General Brainstorming </h2>
+
+You should now have a good idea the BallWorld that exists at the boundaries&mdash;the BallWorld
+that we experience when we run it and that for us characterizes its abstraction. 
+
+
 
