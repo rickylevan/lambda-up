@@ -14,7 +14,7 @@ public int plus2(int n) {
 }
 ```
 
-```golang
+```go
 func main() {
 		fmt.Println("Hello world!")
 }
