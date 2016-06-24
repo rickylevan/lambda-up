@@ -14,5 +14,11 @@ public int plus2(int n) {
 }
 ```
 
+```golang
+func main() {
+		fmt.Println("Hello world!")
+}
+```
+
 Isn't Java great. 
 	
