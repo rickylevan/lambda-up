@@ -17,6 +17,12 @@ public int plus2(int n) {
 ```go
 func main() {
 		fmt.Println("Hello world!")
+		fmt.Println(3 * 4)
+		f := func() {
+			return 8 * 2
+		}
+		a := f()
+		fmt.Println(a)
 }
 ```
 
