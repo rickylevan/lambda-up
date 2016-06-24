@@ -1,7 +1,7 @@
 name: Lambda-up
 port: 4001
 markdown: redcarpet
-highlighter: pygments
+highlighter: rouge
 baseurl: /lambda-up
 sass:
     sass_dir: _sass
